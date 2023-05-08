@@ -3,6 +3,6 @@
 ## Main Window
 ![Example](https://github.com/1mkRE/analyse_server/blob/main/main_window.jpg)
 ## Amplitude Window
-![Example](https://github.com/1mkRE/analyse_server/blob/master/amp_window.jpg)
+![Example](https://github.com/1mkRE/analyse_server/blob/main/amp_window.jpg)
 ## Vibro Window
-![Example](https://github.com/1mkRE/analyse_server/blob/master/vib_window.jpg)
+![Example](https://github.com/1mkRE/analyse_server/blob/main/vib_window.jpg)
