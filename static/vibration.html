@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="author" content="Matthias Krawczynski">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="LogoTransparent.ico">
+    <title>Vibration</title>
+    <style>
+
+    .container{
+        margin-top: 10px;
+        justify-content: space-between;
+        font-size: 40px;
+        width: 90%;
+        font-weight: bold;
+        background-color: #333;
+        padding: 10px 10px;
+        border-radius: 0.25rem;
+        border: 1px solid #fbdca1;
+    }
+
+    .chartBox{
+        margin-top: 20px;
+	    color: #fff;
+        padding: 10px;
+        width: 90%;
+        border-radius: 0.25rem;
+        background-color: rgb(244, 241, 241);
+	    border: 1px solid #fbdca1;
+    }
+
+    .menuBox{
+        margin-top: 5px;
+        padding: 10px;
+	    background-color: #333;
+        width: 90%;
+        border: 1px solid #fbdca1;
+        border-radius: 0.25rem;
+    }
+
+    body{
+        font-family: 'Open Sans', sans-serif;
+        background-color: #333;
+        padding-left: 100px;
+        padding-right: 100px;
+    }
+
+    label{
+        font-size: 14px;
+    }
+
+    button{
+        background-color: #04AA6D;
+      	border: 1px solid #ced4da;
+      	color: #fff;
+        margin-top: 5px;
+        margin-bottom: 5px;
+        margin-left: 5px;
+        margin-right: 5px;
+        width: 10%;
+	    border-radius: 0.25rem;
+        font-size: 16px;
+    }
+
+    button:hover {
+      background-color: #877350;
+    }
+
+    input[type="number"] {
+      background-color: #555;
+      border: 1px solid #ced4da;
+      color: #04AA6D;
+      border-radius: 0.25rem;
+      font-size: 16px;
+    }
+
+    input[type="file"] {
+      background-color: #333;
+      border: 1px solid #ced4da;
+      color: #04AA6D;
+      border-radius: 0.25rem;
+    }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <img src="LogoTransparent.png" alt="Trulli" width="64" height="64">
+        <a style="color:#fbdca1";>Vibration Interpreter</a>
+    </div>
+
+    <div class="chartBox">
+        <canvas id="myChart"></canvas>
+    </div>
+    <div class="menuBox">
+        <input type="file" id="fileupload" accept=".csv">
+        <button id="upload">Load</button>
+        <button onclick="window.location.href='index.html';">Menu</button>
+    </div>
+	<div class="menuBox">
+        <input type="number" step="any" placeholder="HVSE01 limit value" width="10px" id="HVSE01limit" name="HVSE01limit">
+        <input type="number" step="any" placeholder="HVSE02 limit value" width="10px" id="HVSE02limit" name="HVSE02limit">
+        <input type="number" step="any" placeholder="HVSE03 limit value" width="10px" id="HVSE03limit" name="HVSE03limit">
+        <input type="number" step="any" placeholder="HVSE04 limit value" width="10px" id="HVSE04limit" name="HVSE04limit">
+        <input type="number" step="any" placeholder="DVSE01 limit value" width="10px" id="DVSE01limit" name="DVSE01limit">
+        <input type="number" step="any" placeholder="DVSE02 limit value" width="10px" id="DVSE02limit" name="DVSE02limit">
+        <input type="number" step="any" placeholder="DVSE03 limit value" width="10px" id="DVSE03limit" name="DVSE03limit">
+        <input type="number" step="any" placeholder="DVSE04 limit value" width="10px" id="DVSE04limit" name="DVSE04limit">
+        <input type="number" step="any" placeholder="PVSE01 limit value" width="10px" id="PVSE01limit" name="PVSE01limit">
+        <input type="number" step="any" placeholder="PVSE02 limit value" width="10px" id="PVSE02limit" name="PVSE02limit">
+        <input type="number" step="any" placeholder="PVSE03 limit value" width="10px" id="PVSE03limit" name="PVSE03limit">
+        <input type="number" step="any" placeholder="PVSE04 limit value" width="10px" id="PVSE04limit" name="PVSE04limit">
+        <input type="number" step="any" placeholder="PVSE05 limit value" width="10px" id="PVSE05limit" name="PVSE05limit">
+        <input type="number" step="any" placeholder="Deviation limit value" width="10px" id="flimit" name="flimit">
+    </div>
+    <div class="menuBox">
+        <button onclick="resetZoom()">Reset</button>
+        <label for="checkDrag">Drag:</label> 
+        <input type="checkbox" id="checkDrag" onclick="dragcheck()">
+        <label for="checkPan">Pan:</label> 
+        <input type="checkbox" id="checkPan" checked onclick="pancheck()">
+    </div>
+    <div class="menuBox">
+        <hr1>
+            <button onclick="updateChart('Deviation')">Deviation</button>
+            <button onclick="updateChart('HV SE01')">HVSE01</button>
+            <button onclick="updateChart('HV SE02')">HVSE02</button>
+            <button onclick="updateChart('HV SE03')">HVSE03</button>
+            <button onclick="updateChart('HV SE04')">HVSE04</button>
+            <button onclick="updateChart('DV SE01')">DVSE01</button>
+            <button onclick="updateChart('DV SE02')">DVSE02</button>
+            <button onclick="updateChart('DV SE03')">DVSE03</button>
+            <button onclick="updateChart('DV SE04')">DVSE04</button>
+            <button onclick="updateChart('PV SE01')">PVSE01</button>
+            <button onclick="updateChart('PV SE02')">PVSE02</button>
+            <button onclick="updateChart('PV SE03')">PVSE03</button>
+            <button onclick="updateChart('PV SE04')">PVSE04</button>
+            <button onclick="updateChart('PV SE05')">PVSE05</button>
+            <button onclick="updateChart('Alarm')">Alarm</button>
+        </hr1>
+    </div>
+
+    <script src="PapaParse-5.0.2/papaparse.min.js"></script>
+    <script src="node_modules/chart.js/dist/chart.min.js"></script>
+
+    <script src="node_modules/hammerjs/hammer.min.js"></script>
+
+    <script src="node_modules/chartjs-plugin-zoom/dist/chartjs-plugin-zoom.min.js"></script>
+
+    <script>
+        
+        let limitvalue;
+        let dataTimeDeviation = [];
+        let dataDeviation = [];  
+        let dataTimeRMS1 = [];
+        let dataRMS1 = [];
+        let dataTimeRMS2 = [];
+        let dataRMS2 = [];      
+        let dataTimeRMS3 = [];
+        let dataRMS3 = [];  
+        let dataTimeRMS4 = [];
+        let dataRMS4 = [];  
+        let dataTimeRMS5 = [];
+        let dataRMS5 = [];  
+        let dataTimeRMS6 = [];
+        let dataRMS6 = [];  
+        let dataTimeRMS7 = [];
+        let dataRMS7 = [];  
+        let dataTimeRMS8 = [];
+        let dataRMS8 = [];  
+        let dataTimeRMS9 = [];
+        let dataRMS9 = [];  
+        let dataTimeRMS10 = [];
+        let dataRMS10 = [];  
+        let dataTimeRMS11 = [];
+        let dataRMS11 = [];  
+        let dataTimeRMS12 = [];
+        let dataRMS12 = [];  
+        let dataTimeRMS13 = [];
+        let dataRMS13 = [];  
+        let dataTimeAlarm = [];
+        let dataAlarm = [];
+        let graph = "bar";
+
+        let upload = document.getElementById('upload').addEventListener('click', () => {
+            Papa.parse(document.getElementById('fileupload').files[0],
+            {
+                delimiter: ",",
+		        download: true,
+                header: true,
+                skipEmptyLines: true,
+                complete: function(results){
+                    resetData();
+                    limitvalue = document.getElementById('flimit').value;
+		            limitvalueHVSE01 = document.getElementById('HVSE01limit').value;	
+		            limitvalueHVSE02 = document.getElementById('HVSE02limit').value;
+		            limitvalueHVSE03 = document.getElementById('HVSE03limit').value;
+                    limitvalueHVSE04 = document.getElementById('HVSE04limit').value;
+                    limitvalueDVSE01 = document.getElementById('DVSE01limit').value;	
+		            limitvalueDVSE02 = document.getElementById('DVSE02limit').value;
+		            limitvalueDVSE03 = document.getElementById('DVSE03limit').value;
+                    limitvalueDVSE04 = document.getElementById('DVSE04limit').value;
+                    limitvaluePVSE01 = document.getElementById('PVSE01limit').value;
+                    limitvaluePVSE02 = document.getElementById('PVSE02limit').value;	
+		            limitvaluePVSE03 = document.getElementById('PVSE03limit').value;
+		            limitvaluePVSE04 = document.getElementById('PVSE04limit').value;
+                    limitvaluePVSE05 = document.getElementById('PVSE05limit').value;
+                    for(i = 0; i < results.data.length; i++){
+                        let valueHVTorque = parseFloat(results.data[i].HVTorque); 
+                        let valueLVTorque = parseFloat(results.data[i].LVTorque);
+                        let deviationTorque = valueHVTorque - valueLVTorque; 
+                        let valueRMS1 = parseFloat(results.data[i].RMS1); 
+                        let valueRMS2 = parseFloat(results.data[i].RMS2); 
+                        let valueRMS3 = parseFloat(results.data[i].RMS3); 
+                        let valueRMS4 = parseFloat(results.data[i].RMS4); 
+                        let valueRMS5 = parseFloat(results.data[i].RMS5); 
+                        let valueRMS6 = parseFloat(results.data[i].RMS6); 
+                        let valueRMS7 = parseFloat(results.data[i].RMS7); 
+                        let valueRMS8 = parseFloat(results.data[i].RMS8); 
+                        let valueRMS9 = parseFloat(results.data[i].RMS9); 
+                        let valueRMS10 = parseFloat(results.data[i].RMS10); 
+                        let valueRMS11 = parseFloat(results.data[i].RMS11); 
+                        let valueRMS12 = parseFloat(results.data[i].RMS12); 
+                        let valueRMS13 = parseFloat(results.data[i].RMS13); 
+                        let valueAlarm = parseFloat(results.data[i].Alarm);
+                        let valueSerial = parseFloat(results.data[i].Serial);
+
+                        
+                        if(valueAlarm > 0){
+                            dataTimeAlarm.push(results.data[i].Time + '~' + results.data[i].Serial);
+                            dataAlarm.push(results.data[i].Alarm);}
+                        if (deviationTorque > limitvalue){
+                                dataTimeDeviation.push(results.data[i].Time + '~' + results.data[i].Serial);
+                                dataDeviation.push(deviationTorque.toString());}
+                        if (valueRMS1 > limitvalueHVSE01){
+                                dataTimeRMS1.push(results.data[i].Time);
+                                dataRMS1.push(valueRMS1.toString());}
+                        if (valueRMS2 > limitvalueHVSE02){
+                                dataTimeRMS2.push(results.data[i].Time);
+                                dataRMS2.push(valueRMS2.toString());}
+                        if (valueRMS3 > limitvalueHVSE03){
+                                dataTimeRMS3.push(results.data[i].Time);
+                                dataRMS3.push(valueRMS3.toString());}
+                        if (valueRMS4 > limitvalueHVSE04){
+                                dataTimeRMS4.push(results.data[i].Time);
+                                dataRMS4.push(valueRMS4.toString());}
+                        if (valueRMS5 > limitvalueDVSE01){
+                                dataTimeRMS5.push(results.data[i].Time);
+                                dataRMS5.push(valueRMS5.toString());}
+                        if (valueRMS6 > limitvalueDVSE02){
+                                dataTimeRMS6.push(results.data[i].Time);
+                                dataRMS6.push(valueRMS6.toString());}
+                        if (valueRMS7 > limitvalueDVSE03){
+                                dataTimeRMS7.push(results.data[i].Time);
+                                dataRMS7.push(valueRMS7.toString());}
+                        if (valueRMS8 > limitvalueDVSE04){
+                                dataTimeRMS8.push(results.data[i].Time);
+                                dataRMS8.push(valueRMS8.toString());}
+                        if (valueRMS9 > limitvaluePVSE01){dataTimeRMS10
+                                dataTimeRMS9.push(results.data[i].Time);
+                                dataRMS9.push(valueRMS9.toString());}
+                        if (valueRMS10 > limitvaluePVSE02){
+                                dataTimeRMS10.push(results.data[i].Time);
+                                dataRMS10.push(valueRMS10.toString());}
+                        if (valueRMS11 > limitvaluePVSE03){
+                                dataTimeRMS11.push(results.data[i].Time);
+                                dataRMS11.push(valueRMS11.toString());}
+                        if (valueRMS12 > limitvaluePVSE04){
+                                dataTimeRMS12.push(results.data[i].Time);
+                                dataRMS12.push(valueRMS12.toString());}
+                        if (valueRMS13 > limitvaluePVSE05){
+                                dataTimeRMS13.push(results.data[i].Time);
+                                dataRMS13.push(valueRMS13.toString());}                        
+                    }
+                    console.log(limitvalue);
+                }
+            });
+        });
+
+        // Setup
+        let data = {
+            labels: [],
+            datasets: [{
+                label: 'Empty',
+                data: [],
+                backgroundColor: '#333',
+                borderColor: '333',
+                borderWidth: 1
+            }]
+        };
+
+        // Konfigurieren
+
+        let config = {
+            type: 'bar',
+            data,
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                plugins:{
+                    zoom:{
+                        zoom:{
+                            drag:{
+                                enabled: false
+                            }
+                        },
+                        pan:{
+                                enabled: true,
+                                mode: 'xy'
+                            }
+                    }
+                }
+            }
+        };
+
+        // Initialisieren
+
+        const myChart = new Chart(
+            document.getElementById('myChart'),config
+        );
+
+        function updateChart(label){
+            myChart.data.datasets[0].label = label;
+
+            switch(label)
+            {
+                case 'Deviation':
+                    myChart.data.datasets[0].data = dataDeviation;
+                    myChart.data.labels = dataTimeDeviation;
+                    break;
+                case 'HV SE01':
+                    myChart.data.datasets[0].data = dataRMS1;
+                    myChart.data.labels = dataTimeRMS1;
+                    break;
+                case 'HV SE02':
+                    myChart.data.datasets[0].data = dataRMS2;
+                    myChart.data.labels = dataTimeRMS2;
+                    break;
+                case 'HV SE03':
+                    myChart.data.datasets[0].data = dataRMS3;
+                    myChart.data.labels = dataTimeRMS3;
+                    break;
+                case 'HV SE04':
+                    myChart.data.datasets[0].data = dataRMS4;
+                    myChart.data.labels = dataTimeRMS4;
+                    break;
+                case 'DV SE01':
+                    myChart.data.datasets[0].data = dataRMS5;
+                    myChart.data.labels = dataTimeRMS5;
+                    break;
+                case 'DV SE02':
+                    myChart.data.datasets[0].data = dataRMS6;
+                    myChart.data.labels = dataTimeRMS6;
+                    break;
+                case 'DV SE03':
+                    myChart.data.datasets[0].data = dataRMS7;
+                    myChart.data.labels = dataTimeRMS7;
+                    break;
+                case 'DV SE04':
+                    myChart.data.datasets[0].data = dataRMS8;
+                    myChart.data.labels = dataTimeRMS8;
+                    break;
+                case 'PV SE01':
+                    myChart.data.datasets[0].data = dataRMS9;
+                    myChart.data.labels = dataTimeRMS9;
+                    break;
+                case 'PV SE02':
+                    myChart.data.datasets[0].data = dataRMS10;
+                    myChart.data.labels = dataTimeRMS10;
+                    break;
+                case 'PV SE03':
+                    myChart.data.datasets[0].data = dataRMS11;
+                    myChart.data.labels = dataTimeRMS11;
+                    break;
+                case 'PV SE04':
+                    myChart.data.datasets[0].data = dataRMS12;
+                    myChart.data.labels = dataTimeRMS12;
+                    break;
+                case 'PV SE05':
+                    myChart.data.datasets[0].data = dataRMS13;
+                    myChart.data.labels = dataTimeRMS13;
+                    break;
+                case 'Alarm':
+                    myChart.data.datasets[0].data = dataAlarm;
+                    myChart.data.labels = dataTimeAlarm;
+                    break;
+                default:
+                case 'HV SE01':
+                    myChart.data.datasets[0].data = dataDeviation;
+                    myChart.data.labels = dataTimeDeviation;
+            }
+            myChart.update();
+        }
+
+        function resetZoom(){
+            myChart.resetZoom();
+        }
+
+        function resetData(){
+        dataTimeDeviation = [];
+        dataDeviation = [];  
+        dataTimeRMS1 = [];
+        dataRMS1 = [];
+        dataTimeRMS2 = [];
+        dataRMS2 = [];      
+        dataTimeRMS3 = [];
+        dataRMS3 = [];  
+        dataTimeRMS4 = [];
+        dataRMS4 = [];  
+        dataTimeRMS5 = [];
+        dataRMS5 = [];  
+        dataTimeRMS6 = [];
+        dataRMS6 = [];  
+        dataTimeRMS7 = [];
+        dataRMS7 = [];  
+        dataTimeRMS8 = [];
+        dataRMS8 = [];  
+        dataTimeRMS9 = [];
+        dataRMS9 = [];  
+        dataTimeRMS10 = [];
+        dataRMS10 = [];  
+        dataTimeRMS11 = [];
+        dataRMS11 = [];  
+        dataTimeRMS12 = [];
+        dataRMS12 = [];  
+        dataTimeRMS13 = [];
+        dataRMS13 = [];  
+        dataTimeAlarm = [];
+        dataAlarm = [];
+        }
+
+        function dragcheck() {
+            var checkBoxDrag = document.getElementById("checkDrag");
+            if (checkBoxDrag.checked == true){
+                console.log('Drag true');
+                myChart.config.options.plugins.zoom.zoom.drag.enabled = true;
+                myChart.update();
+            } else {
+                console.log('Drag false');
+                myChart.config.options.plugins.zoom.zoom.drag.enabled = false;
+                myChart.update();
+            }
+        }
+
+        function pancheck() {
+            var checkBoxPan = document.getElementById("checkPan");
+            if (checkBoxPan.checked == true){
+                console.log('Pan true');
+                myChart.config.options.plugins.zoom.pan.enabled = true;
+                myChart.update();
+            } else {
+                console.log('Pan false');
+                myChart.config.options.plugins.zoom.pan.enabled = false;
+                myChart.update();
+            }
+        }
+
+        function selectData(){
+        }
+
+    </script>
+    <div class="legal-content">
+        <span style="color:#fbdca1" class="legal-text">(c) 2023 - Matthias Krawczynski</span>
+    </div> 
+</body>
+</html>

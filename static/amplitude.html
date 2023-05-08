@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="author" content="Matthias Krawczynski">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="LogoTransparent.ico">
+    <title>Amplitude</title>
+    <style>
+
+    .container{
+        margin-top: 10px;
+        justify-content: space-between;
+        font-size: 40px;
+        width: 90%;
+        font-weight: bold;
+        background-color: #333;
+        padding: 10px 10px;
+        border-radius: 0.25rem;
+        border: 1px solid #fbdca1;
+    }
+
+    .chartBox{
+        margin-top: 20px;
+	    color: #fff;
+        padding: 10px;
+        width: 90%;
+        border-radius: 0.25rem;
+        background-color: rgb(244, 241, 241);
+	    border: 1px solid #fbdca1;
+    }
+
+    .menuBox{
+        margin-top: 5px;
+        padding: 10px;
+	    background-color: #333;
+        width: 90%;
+        border: 1px solid #fbdca1;
+        border-radius: 0.25rem;
+    }
+
+    body{
+        font-family: 'Open Sans', sans-serif;
+        background-color: #333;
+        padding-left: 100px;
+        padding-right: 100px;
+    }
+
+    label{
+        font-size: 14px;
+    }
+
+    button{
+        background-color: #04AA6D;
+      	border: 1px solid #ced4da;
+      	color: #fff;
+        margin-top: 5px;
+        margin-bottom: 5px;
+        margin-left: 5px;
+        margin-right: 5px;
+        width: 10%;
+	    border-radius: 0.25rem;
+        font-size: 16px;
+    }
+
+    button:hover {
+      background-color: #877350;
+    }
+
+    input[type="number"] {
+      background-color: #555;
+      border: 1px solid #ced4da;
+      color: #04AA6D;
+      border-radius: 0.25rem;
+      font-size: 16px;
+    }
+
+    input[type="file"] {
+      background-color: #333;
+      border: 1px solid #ced4da;
+      color: #04AA6D;
+      border-radius: 0.25rem;
+    }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <img src="LogoTransparent.png" alt="Trulli" width="64" height="64">
+        <a style="color:#fbdca1";>Amplitude Interpreter</a>
+    </div>
+
+    <div class="chartBox">
+        <canvas id="myChart"></canvas>
+    </div>
+    <div class="menuBox">
+        <input type="file" id="fileupload" accept=".csv">
+        <button id="upload">Load</button>
+        <button onclick="window.location.href='index.html';">Menu</button>
+    </div>
+	<div class="menuBox">
+        <input type="number" step="any" placeholder="Rozkmit limit" width="10px" id="flimit" name="flimit">
+    </div>
+    <div class="menuBox">
+        <button onclick="resetZoom()">Reset</button>
+        <label for="checkDrag">Drag:</label> 
+        <input type="checkbox" id="checkDrag" onclick="dragcheck()">
+        <label for="checkPan">Pan:</label> 
+        <input type="checkbox" id="checkPan" checked onclick="pancheck()">
+    </div>
+    <div class="menuBox">
+        <hr1>
+        <button onclick="updateChart('Rozkmit')">Rozkmit</button>
+        </hr1>
+    </div>
+
+    <script src="PapaParse-5.0.2/papaparse.min.js"></script>
+    <script src="node_modules/chart.js/dist/chart.min.js"></script>
+
+    <script src="node_modules/hammerjs/hammer.min.js"></script>
+
+    <script src="node_modules/chartjs-plugin-zoom/dist/chartjs-plugin-zoom.min.js"></script>
+
+    <script>
+        
+        let limitvalue;
+        let dataTimeRozkmit = [];
+
+        let upload = document.getElementById('upload').addEventListener('click', () => {
+            Papa.parse(document.getElementById('fileupload').files[0],
+            {
+                delimiter: ",",
+		        download: true,
+                header: true,
+                skipEmptyLines: true,
+                complete: function(results){
+                    resetData();
+                    limitvalue = document.getElementById('flimit').value;
+                    for(i = 0; i < results.data.length; i++){
+                        let valueRozkmit = parseFloat(results.data[i].Rozkmit);   
+                        let valuePoradi = parseFloat(results.data[i].Poradi);
+                        if (valueRozkmit > limitvalue){
+                                dataTimeRozkmit.push(results.data[i].Time + '~' + results.data[i].Poradi);
+                                dataRozkmit.push(valueRozkmit.toString());
+                                dataPoradi.push(valuePoradi.toString());}                                               
+                    }
+                    console.log(limitvalue);
+                }
+            });
+        });
+
+        // Setup
+        let data = {
+            labels: [],
+            datasets: [{
+                label: 'Empty',
+                data: [],
+                backgroundColor: '#333',
+                borderColor: '333',
+                borderWidth: 1
+            }]
+        };
+
+        // Konfigurieren
+
+        let config = {
+            type: 'bar',
+            data,
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                plugins:{
+                    zoom:{
+                        zoom:{
+                            drag:{
+                                enabled: false
+                            }
+                        },
+                        pan:{
+                                enabled: true,
+                                mode: 'xy'
+                            }
+                    }
+                }
+            }
+        };
+
+        // Initialisieren
+
+        const myChart = new Chart(
+            document.getElementById('myChart'),config
+        );
+
+        function updateChart(label){
+            myChart.data.datasets[0].label = label;
+            
+            switch(label)
+            {
+                case 'Rozkmit':
+                    myChart.data.datasets[0].data = dataRozkmit;
+                    myChart.data.labels = dataTimeRozkmit;
+                    break;
+                default:
+                case 'Rozkmit':
+                    myChart.data.datasets[0].data = dataRozkmit;
+                    myChart.data.labels = dataTimeRozkmit;
+            }
+            myChart.update();
+        }
+
+        function resetZoom(){
+            myChart.resetZoom();
+        }
+
+        function resetData(){
+        dataTimeRozkmit = [];
+        dataRozkmit = [];  
+        dataPoradi = []; 
+        }
+
+        function dragcheck() {
+            var checkBoxDrag = document.getElementById("checkDrag");
+            if (checkBoxDrag.checked == true){
+                console.log('Drag true');
+                myChart.config.options.plugins.zoom.zoom.drag.enabled = true;
+                myChart.update();
+            } else {
+                console.log('Drag false');
+                myChart.config.options.plugins.zoom.zoom.drag.enabled = false;
+                myChart.update();
+            }
+        }
+
+        function pancheck() {
+            var checkBoxPan = document.getElementById("checkPan");
+            if (checkBoxPan.checked == true){
+                console.log('Pan true');
+                myChart.config.options.plugins.zoom.pan.enabled = true;
+                myChart.update();
+            } else {
+                console.log('Pan false');
+                myChart.config.options.plugins.zoom.pan.enabled = false;
+                myChart.update();
+            }
+        }
+
+        function selectData(){
+        }
+
+    </script>
+    <div class="legal-content">
+        <span style="color:#fbdca1" class="legal-text">(c) 2023 - Matthias Krawczynski</span>
+    </div> 
+</body>
+</html>

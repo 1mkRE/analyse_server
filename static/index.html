@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="author" content="Matthias Krawczynski">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="LogoTransparent.ico">
+    <title>Data Interpreter</title>
+    <style>
+
+    .container{
+        margin-top: 10px;
+        justify-content: space-between;
+        font-size: 40px;
+        width: 90%;
+        font-weight: bold;
+        background-color: #333;
+        padding: 10px 10px;
+        border-radius: 0.25rem;
+        border: 1px solid #fbdca1;
+    }
+
+    .image_container{
+        margin-top: 10px;
+        font-size: 40px;
+        width: 90%;
+        font-weight: bold;
+        background-color: #333;
+        padding: 10px 10px;
+        border-radius: 0.25rem;
+        border: 1px solid #fbdca1;
+        display: flex;
+        justify-content: center;
+    }
+
+    .chartBox{
+        margin-top: 20px;
+	    color: #fff;
+        padding: 10px;
+        width: 90%;
+        border-radius: 0.25rem;
+        background-color: rgb(244, 241, 241);
+	    border: 1px solid #fbdca1;
+    }
+
+    .menuBox{
+        margin-top: 5px;
+        padding: 10px;
+	    background-color: #333;
+        width: 90%;
+        border: 1px solid #fbdca1;
+        border-radius: 0.25rem;
+    }
+
+    body{
+        font-family: 'Open Sans', sans-serif;
+        background-color: #333;
+        padding-left: 100px;
+        padding-right: 100px;
+    }
+
+    label{
+        font-size: 14px;
+    }
+
+    button{
+        background-color: #04AA6D;
+      	border: 1px solid #ced4da;
+      	color: #fff;
+        margin-top: 5px;
+        margin-bottom: 5px;
+        margin-left: 5px;
+        margin-right: 5px;
+        width: 10%;
+	    border-radius: 0.25rem;
+        font-size: 16px;
+    }
+
+    button:hover {
+      background-color: #877350;
+    }
+
+    input[type="number"] {
+      background-color: #555;
+      border: 1px solid #ced4da;
+      color: #04AA6D;
+      border-radius: 0.25rem;
+      font-size: 16px;
+    }
+
+    input[type="file"] {
+      background-color: #333;
+      border: 1px solid #ced4da;
+      color: #04AA6D;
+      border-radius: 0.25rem;
+    }
+
+    .image {
+        width: 100%;
+        height: auto;
+    }
+
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <img src="LogoTransparent.png" alt="Trulli" width="64" height="64">
+        <a style="color:#fbdca1";>Analyse Applications</a>
+    </div>
+
+    <div class="image_container">
+            <img class="image" src="gear.jpg" alt="Example image">
+    </div>
+
+    <div class="menuBox">
+        <hr1>
+            <button onclick="window.location.href='amplitude.html';">Amplitude</button>
+            <button onclick="window.location.href='vibration.html';">Vibration</button>
+        </hr1>
+    </div>
+
+    <div class="legal-content">
+        <span style="color:#fbdca1" class="legal-text">(c) 2023 - Matthias Krawczynski</span>
+    </div> 
+</body>
+</html>
